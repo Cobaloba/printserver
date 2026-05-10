@@ -3,6 +3,7 @@ from app.config import PRINTER_VENDOR_ID, PRINTER_PRODUCT_ID
 
 _printer: PrinterInterface | None = None
 _status_cache = None
+_roll_tracker = None
 
 
 def get_printer() -> PrinterInterface:
@@ -18,3 +19,13 @@ def get_status_cache():
         from app.services.status_cache import StatusCache
         _status_cache = StatusCache()
     return _status_cache
+
+
+def get_roll_tracker():
+    global _roll_tracker
+    if _roll_tracker is None:
+        from app.services.roll_tracker import RollTracker
+        from app.config import DATA_DIR
+        import os
+        _roll_tracker = RollTracker.load(os.path.join(DATA_DIR, "roll_state.json"))
+    return _roll_tracker

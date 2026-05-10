@@ -1,13 +1,16 @@
 import pytest
 from fastapi.testclient import TestClient
 from app.main import app
-from app.dependencies import get_printer
+from app.dependencies import get_printer, get_roll_tracker
+from app.services.roll_tracker import RollTracker
 from app.exceptions import PrinterError
 
 
 @pytest.fixture
-def client(mock_printer):
+def client(mock_printer, tmp_roll_state):
+    tracker = RollTracker.load(tmp_roll_state)
     app.dependency_overrides[get_printer] = lambda: mock_printer
+    app.dependency_overrides[get_roll_tracker] = lambda: tracker
     with TestClient(app) as c:
         yield c
     app.dependency_overrides.clear()

@@ -4,7 +4,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from app.exceptions import PrinterError
-from app.routers import health, print as print_router, status as status_router
+from app.routers import health, print as print_router, status as status_router, admin as admin_router
 
 
 @asynccontextmanager
@@ -31,6 +31,7 @@ async def printer_error_handler(request: Request, exc: PrinterError):
 app.include_router(health.router)
 app.include_router(print_router.router, prefix="/api/v1")
 app.include_router(status_router.router)
+app.include_router(admin_router.router)
 
 # StaticFiles serves the SvelteKit SPA at "/" — must come last
 _static_dir = os.path.join(os.path.dirname(__file__), "static")
