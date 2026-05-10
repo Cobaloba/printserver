@@ -15,7 +15,7 @@ WORKDIR /app
 
 # Install curl for HEALTHCHECK — must be explicit, not in base image
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl \
+    && apt-get install -y --no-install-recommends curl libusb-1.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python dependencies separately from app code (layer cache optimisation:
