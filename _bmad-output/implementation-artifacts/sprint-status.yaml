@@ -56,7 +56,7 @@ development_status:
   epic-2: in-progress
   2-1-printerinterface-escposprinter-mockprinter: review
   2-2-print-service-todo-receipt-goatse: review
-  2-3-print-service-free-text-qr-code: backlog
+  2-3-print-service-free-text-qr-code: review
   2-4-fastapi-application-routers-models-static-mount: backlog
   2-5-status-cache-background-polling-thread: backlog
   2-6-till-roll-tracker: backlog

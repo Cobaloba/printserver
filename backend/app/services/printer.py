@@ -224,7 +224,16 @@ class EscposPrinter(PrinterInterface):
         def _():
             p = self._p
             p.set(align='center')
-            p.qr(url, size=6)
+            try:
+                p.qr(url, size=6)
+            except Exception:
+                # Native QR command not supported — fall back to Pillow raster image
+                import qrcode  # transitive dep of python-escpos
+                qr = qrcode.QRCode(border=2)
+                qr.add_data(url)
+                qr.make(fit=True)
+                img = qr.make_image(fill_color="black", back_color="white")
+                p.image(img.get_image())
             p.text('\n' + url + '\n\n\n')
             p.cut()
 

@@ -18,3 +18,11 @@ def print_receipt(
 
 def print_goatse(printer: PrinterInterface) -> None:
     printer.print_goatse()
+
+
+def print_free_text(printer: PrinterInterface, text: str, font_size: str) -> None:
+    printer.print_free_text(text, font_size)
+
+
+def print_qr(printer: PrinterInterface, url: str) -> None:
+    printer.print_qr(url)
