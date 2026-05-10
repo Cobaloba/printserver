@@ -59,7 +59,7 @@ development_status:
   2-3-print-service-free-text-qr-code: review
   2-4-fastapi-application-routers-models-static-mount: review
   2-5-status-cache-background-polling-thread: review
-  2-6-till-roll-tracker: backlog
+  2-6-till-roll-tracker: review
   2-7-admin-endpoints-full-test-suite: backlog
   epic-2-retrospective: optional
 
