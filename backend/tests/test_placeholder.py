@@ -1,2 +1,2 @@
 def test_placeholder():
-    pass
+    assert False, "intentional failure to verify CI blocks build"
