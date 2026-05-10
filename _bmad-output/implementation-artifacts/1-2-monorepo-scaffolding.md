@@ -363,3 +363,23 @@ IMPORT_VERIFIED: cd backend && python -c "import app.main" → OK.
 GITIGNORE_VERIFIED: .env and backend/app/data/*.json excluded.
 COMMIT: 751c299 feat: story 1.2 — monorepo scaffolding
 ```
+
+---
+
+### Review Findings
+
+Code review run: 2026-05-10 | Layers: Blind Hunter, Edge Case Hunter, Acceptance Auditor | Dismissed: 13
+
+**Patches:**
+- [x] [Review][Patch] `setuptools.backends.legacy:build` should be `setuptools.build_meta` [`backend/pyproject.toml`] — fixed
+- [x] [Review][Patch] `.gitignore` missing common `.env` variants (`.env.local`, `.env.production`, `.env.development`) [`/.gitignore`] — fixed
+
+**Deferred:**
+- [x] [Review][Defer] `PrinterError` has no structured fields [`backend/app/exceptions.py`] — deferred, scaffolding only; detail added in Story 2.1
+- [x] [Review][Defer] `/health` returns `ok` unconditionally regardless of printer state [`backend/app/main.py`] — deferred, full status-aware health check is Story 2.5
+- [x] [Review][Defer] `asyncio_mode = "auto"` set but `anyio` not pinned in dev deps [`backend/requirements-dev.txt`] — deferred, anyio is transitive via httpx; revisit if test flakiness appears
+- [x] [Review][Defer] `PRINTER_VENDOR_ID`/`PRODUCT_ID` crash on non-hex env var strings [`backend/app/config.py`] — deferred, controlled deployment; add validation when env var docs are formalised
+- [x] [Review][Defer] `PORT` has no range validation (0, -1, >65535 silently accepted) [`backend/app/config.py`] — deferred, low risk for single-user homelab
+- [x] [Review][Defer] `DATA_DIR` stored raw; trailing slash or special chars could cause path bugs [`backend/app/config.py`] — deferred, use `os.path.join` / `pathlib` at callsites
+- [x] [Review][Defer] `backend/app/data/*.json` gitignore pattern does not recurse into subdirs [`/.gitignore`] — deferred, architecture only writes files directly in `data/`
+- [x] [Review][Defer] `ssr = false` + `vite-plugin-pwa` autoUpdate can serve stale shell after deploy [`frontend/src/routes/+layout.ts`] — deferred, known PWA limitation; address in Story 3.9 PWA config

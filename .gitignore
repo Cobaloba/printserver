@@ -1,5 +1,9 @@
 # Environment
 .env
+.env.local
+.env.*.local
+.env.development
+.env.production
 
 # Backend state files
 backend/app/data/*.json
