@@ -53,8 +53,8 @@ development_status:
   epic-1-retrospective: optional
 
   # ─── Epic 2: Complete Backend API ──────────────────────────────────────────
-  epic-2: backlog
-  2-1-printerinterface-escposprinter-mockprinter: backlog
+  epic-2: in-progress
+  2-1-printerinterface-escposprinter-mockprinter: review
   2-2-print-service-todo-receipt-goatse: backlog
   2-3-print-service-free-text-qr-code: backlog
   2-4-fastapi-application-routers-models-static-mount: backlog
