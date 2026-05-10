@@ -2,7 +2,7 @@
 
 **Epic:** 1 — Foundation & CI/CD Pipeline
 **Story:** 1.2
-**Status:** ready-for-dev
+**Status:** done
 
 ---
 
@@ -345,4 +345,21 @@ Should complete without errors and produce `frontend/build/`.
 
 ## Dev Notes
 
-_To be filled by developer during/after implementation._
+```
+Implemented: 2026-05-10
+
+PACKAGE_JSON_TYPE: "type": "module" required in frontend/package.json — SvelteKit
+  is ESM-only and vite.config.ts fails to load without it.
+
+VITE_PLUGIN_SVELTE_VERSION: @sveltejs/vite-plugin-svelte@^4 only supports Vite 5.
+  Must use ^5.0.0 for Vite 6 compatibility. package.json has ^5.0.0.
+
+SVELTE_KIT_TSCONFIG: tsconfig.json extends .svelte-kit/tsconfig.json which is
+  generated at build time by svelte-kit sync. The "Cannot find base config file"
+  warning on first build is expected and harmless — it resolves on subsequent builds.
+
+BUILD_VERIFIED: cd frontend && npm run build → success, build/ produced.
+IMPORT_VERIFIED: cd backend && python -c "import app.main" → OK.
+GITIGNORE_VERIFIED: .env and backend/app/data/*.json excluded.
+COMMIT: 751c299 feat: story 1.2 — monorepo scaffolding
+```
