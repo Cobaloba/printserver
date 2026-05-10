@@ -21,11 +21,7 @@ RUN apt-get update \
 # Install Python dependencies separately from app code (layer cache optimisation:
 # pyproject.toml changes rarely; app code changes often)
 COPY backend/pyproject.toml ./pyproject.toml
-RUN pip install --no-cache-dir \
-    "fastapi>=0.115.0" \
-    "uvicorn[standard]>=0.27.0" \
-    "python-escpos>=3.1" \
-    "pydantic>=2.0"
+RUN pip install --no-cache-dir .
 
 # Copy application source
 COPY backend/app/ ./app/

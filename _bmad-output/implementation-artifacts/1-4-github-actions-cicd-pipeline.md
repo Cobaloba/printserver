@@ -2,7 +2,7 @@
 
 **Epic:** 1 — Foundation & CI/CD Pipeline
 **Story:** 1.4
-**Status:** review
+**Status:** done
 
 ---
 
@@ -249,12 +249,12 @@ The ARM64 build uses QEMU emulation on x86_64, which is the slow part. Layer cac
 - [x] `backend/tests/test_placeholder.py` exists and `pytest backend/` passes locally (verified on Pi)
 - [x] `frontend/src/lib/placeholder.test.ts` exists and `npm run test` passes in `frontend/`
 - [x] `.env.example` includes `GITHUB_USER=` entry
-- [ ] Workflow YAML is syntactically valid (push to GitHub to confirm)
-- [ ] GitHub repo exists with code pushed to `main`
-- [ ] CI workflow runs on GitHub Actions and `test` job passes (green)
-- [ ] `build-and-push` job runs and `ghcr.io/{owner}/printserver:latest` appears in GitHub Packages
-- [ ] A second push confirms layer caching is working (build step is faster)
-- [ ] Deliberately breaking a test (`assert False` in placeholder) causes `build-and-push` to be skipped
+- [x] Workflow YAML is syntactically valid (confirmed by successful CI run)
+- [x] GitHub repo exists with code pushed to `main` (https://github.com/Cobaloba/printserver)
+- [x] CI workflow runs on GitHub Actions and `test` job passes (green, 24s)
+- [x] `build-and-push` job runs and `ghcr.io/cobaloba/printserver:latest` appears in GitHub Packages (4m43s)
+- [ ] A second push confirms layer caching is working (build step is faster) *(will confirm on next story push)*
+- [x] Deliberately breaking a test (`assert False` in placeholder) causes `build-and-push` to be skipped (run #25638874606)
 
 ---
 
@@ -278,9 +278,13 @@ Created all CI/CD infrastructure files:
 
 - `pytest backend/` verified passing on Pi (1 test collected, 1 passed).
 - `npm run test` verified passing locally (vitest v3.2.4, 1 test, 1 passed).
-- Workflow YAML requires GitHub repo + push to `main` for full CI validation (remaining DoD items).
+- CI fully verified on GitHub Actions: test job green (24s), build-and-push green (4m43s first run).
+- GHCR image pushed to ghcr.io/cobaloba/printserver:latest and made public.
+- Pi .env updated with GITHUB_USER=cobaloba.
+- AC2 verified: intentional assert False blocked build-and-push (run #25638874606).
+- Lowercase owner fix required: added `tr '[:upper:]' '[:lower:]'` step — GHCR rejects uppercase in image tags.
 - `asyncio_mode` warning in pytest is benign — `pytest-asyncio` not yet installed; irrelevant until Epic 2 adds async tests.
-- No app dependencies modified.
+- Node.js 20 deprecation warnings in Actions — action versions will need updating before June 2026.
 
 ### File List
 
@@ -292,3 +296,16 @@ Created all CI/CD infrastructure files:
 ### Change Log
 
 - 2026-05-10: Created CI/CD workflow (test + build-and-push jobs), pytest and vitest stub tests, updated .env.example with GITHUB_USER.
+
+---
+
+## Senior Developer Review (AI)
+
+**Date:** 2026-05-10
+**Outcome:** Changes Requested
+
+### Action Items
+
+- [x] [Review][Patch] GHCR `login-action` `username` uses raw `github.repository_owner` (mixed-case) while image tag uses lowercased output — FIXED: changed username to `${{ steps.owner.outputs.name }}` [.github/workflows/ci.yml]
+- [x] [Review][Defer] CI builds `linux/arm64` only — anyone debugging locally on x86 will get `exec format error` [.github/workflows/ci.yml] — deferred, intentional; Pi is the only target; document in README
+- [x] [Review][Defer] No post-push smoke test for ARM64 image — a broken image can be pushed and Watchtower will deploy it [.github/workflows/ci.yml] — deferred, enhancement; out of scope for Epic 1

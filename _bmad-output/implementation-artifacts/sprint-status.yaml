@@ -47,9 +47,9 @@ development_status:
   epic-1: in-progress
   1-1-hardware-port-validation-spikes: done
   1-2-monorepo-scaffolding: done
-  1-3-multi-stage-dockerfile-docker-compose: review
-  1-4-github-actions-cicd-pipeline: review
-  1-5-watchtower-auto-deploy-makefile: review
+  1-3-multi-stage-dockerfile-docker-compose: done
+  1-4-github-actions-cicd-pipeline: done
+  1-5-watchtower-auto-deploy-makefile: done
   epic-1-retrospective: optional
 
   # ─── Epic 2: Complete Backend API ──────────────────────────────────────────

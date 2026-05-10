@@ -2,7 +2,7 @@
 
 **Epic:** 1 — Foundation & CI/CD Pipeline
 **Story:** 1.3
-**Status:** review
+**Status:** done
 
 ---
 
@@ -328,3 +328,17 @@ Created all Docker infrastructure files as specified:
 ### Change Log
 
 - 2026-05-10: Created Dockerfile (multi-stage node+python), docker-compose.yml, data/.gitkeep; updated .gitignore with data/*.json runtime state exclusion.
+
+---
+
+## Senior Developer Review (AI)
+
+**Date:** 2026-05-10
+**Outcome:** Changes Requested
+
+### Action Items
+
+- [x] [Review][Patch] `docker-compose.yml` healthcheck YAML indentation broken — FALSE POSITIVE; committed file is correctly indented; diff rendering was misleading [docker-compose.yml]
+- [x] [Review][Patch] `Dockerfile` `pip install` should use `pip install .` not hardcoded package list — FIXED: replaced 4-line explicit install with `pip install --no-cache-dir .` [Dockerfile]
+- [x] [Review][Defer] `make redeploy` uses `--build` which builds from source on Pi instead of pulling CI-tested GHCR image [Makefile] — deferred, spec-compliant per Story 1.5 AC3; intentional for manual emergency deploys
+- [x] [Review][Defer] `/dev/receipt-printer` device absence causes container start failure with no fallback [docker-compose.yml] — deferred, known hardware dependency; handled by Story 1.1 udev symlink

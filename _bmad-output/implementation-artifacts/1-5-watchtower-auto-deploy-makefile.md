@@ -2,7 +2,7 @@
 
 **Epic:** 1 — Foundation & CI/CD Pipeline
 **Story:** 1.5
-**Status:** review
+**Status:** done
 
 ---
 
@@ -201,3 +201,17 @@ _To be filled by developer during/after implementation._
 ### Change Log
 
 - 2026-05-10: Created Makefile, added Watchtower + container_name to docker-compose.yml, converted Pi to git clone, added redeploy alias to Pi .bashrc.
+
+---
+
+## Senior Developer Review (AI)
+
+**Date:** 2026-05-10
+**Outcome:** Changes Requested
+
+### Action Items
+
+- [x] [Review][Defer] `~/.bashrc` alias not versioned in repo — new Pi setup requires manual step [Makefile] — deferred, Pi host state; not possible to commit dotfiles in this repo structure
+- [x] [Review][Defer] Makefile hardcodes `PI_HOST`/`PI_KEY` with no env var override [Makefile] — deferred, single-developer project; values are correct documented facts
+- [x] [Review][Defer] `Makefile test` has no dependency install step — fails on clean environment [Makefile] — deferred, convenience wrapper; developer expected to have env set up
+- [x] [Review][Defer] No image digest pinning for `containrrr/watchtower` or base images — upstream breaking change risk [docker-compose.yml, Dockerfile] — deferred, enhancement for single-dev project
