@@ -1,0 +1,4 @@
+# Defaults from .gitignore
+node_modules
+build
+.svelte-kit

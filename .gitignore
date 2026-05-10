@@ -1,0 +1,23 @@
+# Environment
+.env
+
+# Backend state files
+backend/app/data/*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+dist/
+build/
+
+# Node / Frontend
+node_modules/
+frontend/build/
+frontend/.svelte-kit/
+.svelte-kit/
+
+# OS
+.DS_Store
+Thumbs.db

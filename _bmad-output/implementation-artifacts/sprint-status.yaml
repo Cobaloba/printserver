@@ -1,0 +1,78 @@
+# generated: 2026-05-08
+# last_updated: 2026-05-08
+# project: PrintServer
+# project_key: NOKEY
+# tracking_system: file-system
+# story_location: _bmad-output/implementation-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic not yet started
+#   - in-progress: Epic actively being worked on
+#   - done: All stories in epic completed
+#
+# Epic Status Transitions:
+#   - backlog → in-progress: Automatically when first story is created (via create-story)
+#   - in-progress → done: Manually when all stories reach 'done' status
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - ready-for-dev: Story file created in stories folder
+#   - in-progress: Developer actively working on implementation
+#   - review: Ready for code review (via Dev's code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - done: Retrospective has been completed
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epic transitions to 'in-progress' automatically when first story is created
+# - Stories can be worked in parallel if team capacity allows
+# - Developer typically creates next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+
+generated: 2026-05-08
+last_updated: 2026-05-08
+project: PrintServer
+project_key: NOKEY
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts
+
+development_status:
+
+  # ─── Epic 1: Foundation & CI/CD Pipeline ───────────────────────────────────
+  epic-1: in-progress
+  1-1-hardware-port-validation-spikes: done
+  1-2-monorepo-scaffolding: backlog
+  1-3-multi-stage-dockerfile-docker-compose: backlog
+  1-4-github-actions-cicd-pipeline: backlog
+  1-5-watchtower-auto-deploy-makefile: backlog
+  epic-1-retrospective: optional
+
+  # ─── Epic 2: Complete Backend API ──────────────────────────────────────────
+  epic-2: backlog
+  2-1-printerinterface-escposprinter-mockprinter: backlog
+  2-2-print-service-todo-receipt-goatse: backlog
+  2-3-print-service-free-text-qr-code: backlog
+  2-4-fastapi-application-routers-models-static-mount: backlog
+  2-5-status-cache-background-polling-thread: backlog
+  2-6-till-roll-tracker: backlog
+  2-7-admin-endpoints-full-test-suite: backlog
+  epic-2-retrospective: optional
+
+  # ─── Epic 3: Frontend PWA ───────────────────────────────────────────────────
+  epic-3: backlog
+  3-1-sveltekit-foundation: backlog
+  3-2-api-client-stores-and-polling: backlog
+  3-3-shared-components: backlog
+  3-4-root-layout-home-screen: backlog
+  3-5-todo-and-free-text-print-pages: backlog
+  3-6-receipt-print-page: backlog
+  3-7-qr-code-goatse-pages: backlog
+  3-8-admin-page-till-roll-management: backlog
+  3-9-pwa-configuration: backlog
+  3-10-accessibility-polish: backlog
+  epic-3-retrospective: optional
