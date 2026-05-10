@@ -1,5 +1,6 @@
 services:
   printserver:
+    container_name: printserver
     image: ghcr.io/${GITHUB_USER:-local}/printserver:latest
     build: .
     restart: unless-stopped
@@ -16,3 +17,10 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
+
+  watchtower:
+    image: containrrr/watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 300 printserver
