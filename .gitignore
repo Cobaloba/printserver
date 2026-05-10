@@ -8,6 +8,9 @@
 # Backend state files
 backend/app/data/*.json
 
+# Runtime state (host-side volume mount)
+data/*.json
+
 # Python
 __pycache__/
 *.py[cod]
