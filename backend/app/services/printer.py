@@ -275,10 +275,15 @@ class MockPrinter(PrinterInterface):
         self._calls: list[tuple[str, tuple, dict]] = []
         self._last_bytes: int = 0
         self._raise_on_print: Exception | None = None
+        self._raise_on_status: Exception | None = None
 
     def configure_error(self, exc: Exception) -> None:
         """Make the next print call raise exc — for testing error propagation."""
         self._raise_on_print = exc
+
+    def configure_status_error(self, exc: Exception) -> None:
+        """Make the next get_status call raise exc — for testing status polling."""
+        self._raise_on_status = exc
 
     def _record(self, method: str, *args) -> None:
         if self._raise_on_print is not None:
@@ -304,6 +309,10 @@ class MockPrinter(PrinterInterface):
         self._record("print_goatse")
 
     def get_status(self) -> dict:
+        if self._raise_on_status is not None:
+            exc = self._raise_on_status
+            self._raise_on_status = None
+            raise exc
         return {"printer_online": True, "paper_near_end": False, "paper_out": False}
 
     def get_bytes_for_job(self) -> int:

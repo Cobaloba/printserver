@@ -1,11 +1,25 @@
 import os
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from app.exceptions import PrinterError
-from app.routers import health, print as print_router
+from app.routers import health, print as print_router, status as status_router
 
-app = FastAPI(title="PrintServer")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    from app.dependencies import get_printer, get_status_cache
+    cache = get_status_cache()
+    try:
+        printer = get_printer()
+        cache.start(printer)
+    except Exception:
+        pass  # printer unavailable at startup — cache stays at offline default
+    yield
+
+
+app = FastAPI(title="PrintServer", lifespan=lifespan)
 
 
 @app.exception_handler(PrinterError)
@@ -16,6 +30,7 @@ async def printer_error_handler(request: Request, exc: PrinterError):
 # API routers MUST be registered before StaticFiles mount
 app.include_router(health.router)
 app.include_router(print_router.router, prefix="/api/v1")
+app.include_router(status_router.router)
 
 # StaticFiles serves the SvelteKit SPA at "/" — must come last
 _static_dir = os.path.join(os.path.dirname(__file__), "static")
