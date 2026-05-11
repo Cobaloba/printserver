@@ -1,8 +1,33 @@
 <script lang="ts">
-  import '../app.css';
-  import type { Snippet } from 'svelte';
+  import { onMount, onDestroy } from 'svelte'
+  import type { Snippet } from 'svelte'
+  import { Toaster } from 'svelte-sonner'
+  import '../app.css'
+  import { startPolling, stopPolling } from '$lib/polling'
+  import { printerStatus } from '$lib/stores'
+  import StatusDot from '$lib/components/StatusDot.svelte'
+  import RollGauge from '$lib/components/RollGauge.svelte'
 
-  let { children }: { children: Snippet } = $props();
+  let { children }: { children: Snippet } = $props()
+
+  onMount(() => startPolling())
+  onDestroy(() => stopPolling())
 </script>
 
-{@render children()}
+<div class="min-h-screen bg-bg text-white">
+  <header class="flex items-center justify-between px-4 py-3 bg-surface border-b border-gray-800">
+    <div class="flex items-center gap-2">
+      <StatusDot status={$printerStatus} />
+      <span class="text-sm text-gray-400">
+        {$printerStatus.printer_online ? 'Online' : 'Offline'}
+      </span>
+    </div>
+    <div class="w-14 h-8">
+      <RollGauge pct={$printerStatus.estimated_remaining_pct} />
+    </div>
+  </header>
+
+  {@render children()}
+</div>
+
+<Toaster />

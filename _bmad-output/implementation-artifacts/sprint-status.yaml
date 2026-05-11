@@ -64,11 +64,11 @@ development_status:
   epic-2-retrospective: done
 
   # ─── Epic 3: Frontend PWA ───────────────────────────────────────────────────
-  epic-3: backlog
-  3-1-sveltekit-foundation: backlog
-  3-2-api-client-stores-and-polling: backlog
-  3-3-shared-components: backlog
-  3-4-root-layout-home-screen: backlog
+  epic-3: in-progress
+  3-1-sveltekit-foundation: review
+  3-2-api-client-stores-and-polling: review
+  3-3-shared-components: review
+  3-4-root-layout-home-screen: review
   3-5-todo-and-free-text-print-pages: backlog
   3-6-receipt-print-page: backlog
   3-7-qr-code-goatse-pages: backlog
