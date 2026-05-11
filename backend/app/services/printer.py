@@ -216,12 +216,14 @@ class EscposPrinter(PrinterInterface):
         self._run(_)
 
     def print_free_text(self, text: str, font_size: str) -> None:
-        size_map = {"small": (1, 1), "medium": (1, 2), "large": (2, 2)}
-        height, width = size_map.get(font_size, (1, 1))
-
         def _():
             p = self._p
-            p.set(align='left', height=height, width=width)
+            if font_size == 'small':
+                p.set(align='left', font='b')           # font B is physically smaller
+            elif font_size == 'large':
+                p.set(align='left', font='a', custom_size=True, width=2, height=2)
+            else:                                        # medium (default)
+                p.set(align='left', font='a')
             p.text(text + '\n\n\n')
             p.cut()
 
