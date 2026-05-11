@@ -1,5 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
+from app.auth import require_api_key
 from app.dependencies import get_printer, get_roll_tracker
 from app.services.printer import PrinterInterface
 from app.services.roll_tracker import RollTracker
@@ -8,7 +9,7 @@ from app.models.print_models import (
     TodoRequest, ReceiptRequest, FreeTextRequest, QrRequest,
 )
 
-router = APIRouter(prefix="/print", tags=["print"])
+router = APIRouter(prefix="/print", tags=["print"], dependencies=[Depends(require_api_key)])
 PrinterDep = Annotated[PrinterInterface, Depends(get_printer)]
 TrackerDep = Annotated[RollTracker, Depends(get_roll_tracker)]
 

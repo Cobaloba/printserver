@@ -1,10 +1,11 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
+from app.auth import require_api_key
 from app.dependencies import get_roll_tracker
 from app.services.roll_tracker import RollTracker
 from app.models.admin_models import NewRollRequest
 
-router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
+router = APIRouter(prefix="/api/v1/admin", tags=["admin"], dependencies=[Depends(require_api_key)])
 TrackerDep = Annotated[RollTracker, Depends(get_roll_tracker)]
 
 

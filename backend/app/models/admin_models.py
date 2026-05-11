@@ -1,6 +1,6 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class NewRollRequest(BaseModel):
-    width_mm: int
-    diameter_mm: int
+    width_mm: int = Field(gt=0)
+    diameter_mm: int = Field(gt=0)

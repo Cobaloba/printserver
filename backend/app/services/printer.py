@@ -122,6 +122,7 @@ class EscposPrinter(PrinterInterface):
         import threading
         from app.exceptions import PrinterError
         self._lock = threading.Lock()
+        self._last_job_bytes: int = 0
         try:
             self._p = _make_usb(vendor_id, product_id)
         except Exception as e:
@@ -135,7 +136,9 @@ class EscposPrinter(PrinterInterface):
                 fn()
             except Exception as e:
                 logger.warning("Printer error: %s", e)
+                self._last_job_bytes = 0
                 raise PrinterError(str(e) or repr(e)) from e
+            self._last_job_bytes = self._p._bytes_written
 
     def print_todo(self, title: str, items: list[str]) -> None:
         lw = self.LINE_WIDTH
@@ -267,7 +270,7 @@ class EscposPrinter(PrinterInterface):
             raise PrinterError(f"Status check failed: {e}") from e
 
     def get_bytes_for_job(self) -> int:
-        return self._p._bytes_written
+        return self._last_job_bytes
 
 
 # ── Mock printer ───────────────────────────────────────────────────────────────

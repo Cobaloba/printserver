@@ -1,3 +1,4 @@
+import logging
 import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
@@ -6,16 +7,18 @@ from fastapi.staticfiles import StaticFiles
 from app.exceptions import PrinterError
 from app.routers import health, print as print_router, status as status_router, admin as admin_router
 
+logger = logging.getLogger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    from app.dependencies import get_printer, get_status_cache
+    from app.dependencies import get_printer, get_status_cache, get_roll_tracker
     cache = get_status_cache()
     try:
         printer = get_printer()
         cache.start(printer)
-    except Exception:
-        pass  # printer unavailable at startup — cache stays at offline default
+    except PrinterError as e:
+        logger.warning("Printer unavailable at startup: %s — running in offline mode", e)
     yield
 
 

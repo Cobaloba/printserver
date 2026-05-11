@@ -1,4 +1,5 @@
-from pydantic import BaseModel, field_validator
+from typing import Literal
+from pydantic import BaseModel, Field, field_validator
 
 
 class TodoRequest(BaseModel):
@@ -23,13 +24,20 @@ class ReceiptRequest(BaseModel):
     items: list[ReceiptItem]
     address: str | None = None
     phone: str | None = None
-    tax_pct: float = 0.0
+    tax_pct: float = Field(default=0.0, ge=0.0)
+
+    @field_validator('items')
+    @classmethod
+    def items_not_empty(cls, v):
+        if not v:
+            raise ValueError('items must not be empty')
+        return v
 
 
 class FreeTextRequest(BaseModel):
     text: str
-    font_size: str = "medium"
+    font_size: Literal["small", "medium", "large"] = "medium"
 
 
 class QrRequest(BaseModel):
-    url: str
+    url: str = Field(max_length=2048)
