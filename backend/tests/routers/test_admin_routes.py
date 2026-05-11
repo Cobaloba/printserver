@@ -44,11 +44,14 @@ def test_reset_roll_returns_success(client):
     assert r.json() == {"success": True}
 
 
-def test_reset_roll_updates_state(client):
+def test_reset_roll_updates_state(client, tmp_roll_state):
+    import json
     c, tracker = client
     c.post("/api/v1/admin/roll", json={"width_mm": 57, "diameter_mm": 35})
     assert tracker.state["roll_diameter_mm"] == 35
     assert tracker.state["bytes_printed"] == 0
+    on_disk = json.loads(tmp_roll_state.read_text())
+    assert on_disk["roll_diameter_mm"] == 35
 
 
 def test_reset_roll_missing_width_returns_422(client):
@@ -60,6 +63,30 @@ def test_reset_roll_missing_width_returns_422(client):
 def test_reset_roll_missing_diameter_returns_422(client):
     c, _ = client
     r = c.post("/api/v1/admin/roll", json={"width_mm": 57})
+    assert r.status_code == 422
+
+
+def test_reset_roll_zero_width_returns_422(client):
+    c, _ = client
+    r = c.post("/api/v1/admin/roll", json={"width_mm": 0, "diameter_mm": 40})
+    assert r.status_code == 422
+
+
+def test_reset_roll_negative_width_returns_422(client):
+    c, _ = client
+    r = c.post("/api/v1/admin/roll", json={"width_mm": -1, "diameter_mm": 40})
+    assert r.status_code == 422
+
+
+def test_reset_roll_zero_diameter_returns_422(client):
+    c, _ = client
+    r = c.post("/api/v1/admin/roll", json={"width_mm": 57, "diameter_mm": 0})
+    assert r.status_code == 422
+
+
+def test_reset_roll_negative_diameter_returns_422(client):
+    c, _ = client
+    r = c.post("/api/v1/admin/roll", json={"width_mm": 57, "diameter_mm": -5})
     assert r.status_code == 422
 
 

@@ -25,7 +25,11 @@ def test_start_does_not_raise_when_printer_raises(mock_printer):
 def test_cache_populates_after_polling(mock_printer):
     cache = StatusCache()
     cache.start(mock_printer)
-    time.sleep(6)  # wait for at least one poll cycle
+    # first poll fires immediately (sleep is at end of loop); retry up to 1s
+    for _ in range(20):
+        if cache.get_cached()["printer_online"]:
+            break
+        time.sleep(0.05)
     assert cache.get_cached()["printer_online"] is True
 
 

@@ -76,5 +76,8 @@ def test_estimate_remaining_never_below_zero(tmp_roll_state):
 def test_save_uses_atomic_write(tmp_roll_state):
     tracker = RollTracker.load(tmp_roll_state)
     tracker.add_bytes(42)
-    # No .tmp file should remain after save
+    # tmp file must be cleaned up (os.replace consumed it)
     assert not tmp_roll_state.with_suffix(".tmp").exists()
+    # and the target file must contain the correct data
+    on_disk = json.loads(tmp_roll_state.read_text())
+    assert on_disk["bytes_printed"] == 42
