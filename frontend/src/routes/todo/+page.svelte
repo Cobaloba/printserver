@@ -52,6 +52,7 @@
       onkeydown={(e) => e.key === 'Enter' && addItem()}
       class="flex-1 rounded-lg bg-surface px-3 py-2 text-white min-h-[44px]"
       placeholder="Add an item…"
+      aria-label="New item"
     />
     <button
       onclick={addItem}

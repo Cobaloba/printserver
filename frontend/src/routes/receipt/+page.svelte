@@ -95,6 +95,7 @@
         onkeydown={(e) => e.key === 'Enter' && addRow()}
         class="flex-1 rounded-lg bg-surface px-3 py-2 text-white min-h-[44px]"
         placeholder="Item name"
+        aria-label="Item name"
       />
       <input
         bind:value={newPrice}
@@ -104,6 +105,7 @@
         step="0.01"
         class="w-24 rounded-lg bg-surface px-3 py-2 text-white min-h-[44px]"
         placeholder="0.00"
+        aria-label="Item price"
       />
       <button
         onclick={addRow}

@@ -72,7 +72,7 @@ development_status:
   3-5-todo-and-free-text-print-pages: review
   3-6-receipt-print-page: review
   3-7-qr-code-goatse-pages: review
-  3-8-admin-page-till-roll-management: backlog
-  3-9-pwa-configuration: backlog
-  3-10-accessibility-polish: backlog
+  3-8-admin-page-till-roll-management: review
+  3-9-pwa-configuration: review
+  3-10-accessibility-polish: review
   epic-3-retrospective: optional
