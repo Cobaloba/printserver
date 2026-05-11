@@ -12,11 +12,15 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    from app.dependencies import get_printer, get_status_cache, get_roll_tracker
+    from app.dependencies import get_printer, get_status_cache
+    from app.config import TELEGRAM_BOT_TOKEN
     cache = get_status_cache()
     try:
         printer = get_printer()
         cache.start(printer)
+        if TELEGRAM_BOT_TOKEN:
+            from app.services.telegram_bot import TelegramBot
+            TelegramBot(TELEGRAM_BOT_TOKEN).start(printer)
     except PrinterError as e:
         logger.warning("Printer unavailable at startup: %s — running in offline mode", e)
     yield
