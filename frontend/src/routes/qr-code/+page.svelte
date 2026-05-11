@@ -16,13 +16,17 @@
 
   $effect(() => {
     const trimmed = url.trim()
-    if (isValidUrl(trimmed)) {
+    if (!isValidUrl(trimmed)) {
+      qrDataUrl = ''
+      return
+    }
+    // Debounce: wait 300ms after typing stops before generating
+    const timer = setTimeout(() => {
       QRCode.toDataURL(trimmed, { width: 200, margin: 1 })
         .then(data => { qrDataUrl = data })
         .catch(() => { qrDataUrl = '' })
-    } else {
-      qrDataUrl = ''
-    }
+    }, 300)
+    return () => clearTimeout(timer)
   })
 
   async function handlePrint() {
