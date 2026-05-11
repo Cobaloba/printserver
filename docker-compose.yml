@@ -7,6 +7,7 @@ services:
     ports:
       - "9000:9000"
     env_file: .env
+    privileged: true
     devices:
       - /dev/receipt-printer:/dev/receipt-printer
     volumes:
