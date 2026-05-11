@@ -21,9 +21,10 @@ async def lifespan(app: FastAPI):
         cache.start(printer)
         if TELEGRAM_BOT_TOKEN:
             from app.services.telegram_bot import TelegramBot
-            from app.config import TELEGRAM_ALLOWED_IDS
+            from app.config import TELEGRAM_ALLOWED_IDS, DATA_DIR
             from app.dependencies import set_telegram_bot
-            bot = TelegramBot(TELEGRAM_BOT_TOKEN, allowed_ids=TELEGRAM_ALLOWED_IDS)
+            db_path = os.path.join(DATA_DIR, "bot_messages.db")
+            bot = TelegramBot(TELEGRAM_BOT_TOKEN, allowed_ids=TELEGRAM_ALLOWED_IDS, db_path=db_path)
             bot.start(printer)
             set_telegram_bot(bot)
     except PrinterError as e:

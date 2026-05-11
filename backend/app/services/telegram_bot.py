@@ -1,5 +1,6 @@
 import json
 import logging
+import sqlite3
 import ssl
 import threading
 import urllib.error
@@ -14,6 +15,35 @@ from app.services.printer import PrinterInterface
 
 logger = logging.getLogger(__name__)
 
+
+class MessageStore:
+    """Persists all bot messages to a SQLite database for permanent record-keeping."""
+
+    def __init__(self, path: str):
+        self._lock = threading.Lock()
+        self._conn = sqlite3.connect(path, check_same_thread=False)
+        self._conn.execute("""
+            CREATE TABLE IF NOT EXISTS bot_messages (
+                id        INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT NOT NULL,
+                sender_name TEXT NOT NULL,
+                sender_id INTEGER NOT NULL,
+                text      TEXT NOT NULL,
+                status    TEXT NOT NULL
+            )
+        """)
+        self._conn.commit()
+        logger.info("Message store opened at %s", path)
+
+    def insert(self, timestamp: str, sender_name: str, sender_id: int, text: str, status: str) -> None:
+        with self._lock:
+            self._conn.execute(
+                "INSERT INTO bot_messages (timestamp, sender_name, sender_id, text, status) "
+                "VALUES (?, ?, ?, ?, ?)",
+                (timestamp, sender_name, sender_id, text, status),
+            )
+            self._conn.commit()
+
 _HELP = (
     "PrintServer bot 🖨️\n\n"
     "print: <text>  — print free text\n"
@@ -22,12 +52,13 @@ _HELP = (
 
 
 class TelegramBot:
-    def __init__(self, token: str, allowed_ids: set[int] | None = None):
+    def __init__(self, token: str, allowed_ids: set[int] | None = None, db_path: str | None = None):
         self._base = f"https://api.telegram.org/bot{token}"
         self._started = False
         self._allowed_ids = allowed_ids  # None = open to all
         self._log: deque = deque(maxlen=20)
         self._log_lock = threading.Lock()
+        self._store = MessageStore(db_path) if db_path else None
 
     def get_log(self) -> list:
         with self._log_lock:
@@ -43,6 +74,8 @@ class TelegramBot:
         }
         with self._log_lock:
             self._log.append(entry)
+        if self._store:
+            self._store.insert(entry["timestamp"], sender_name, sender_id, text, status)
 
     def start(self, printer: PrinterInterface) -> None:
         if self._started:
