@@ -12,5 +12,6 @@ TrackerDep = Annotated[RollTracker, Depends(get_roll_tracker)]
 @router.get("/api/v1/status")
 def get_status(cache: CacheDep, tracker: TrackerDep):
     status = cache.get_cached()
+    cache.check_near_end_calibration(tracker, status.get("paper_near_end", False))
     status["estimated_remaining_pct"] = tracker.estimate_remaining()
     return status

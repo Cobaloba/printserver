@@ -18,6 +18,7 @@ class StatusCache:
         self._cache: dict = dict(_DEFAULT_STATE)
         self._lock = threading.Lock()
         self._started = False
+        self._prev_near_end: bool = False
 
     def start(self, printer) -> None:
         if self._started:
@@ -44,3 +45,13 @@ class StatusCache:
     def get_cached(self) -> dict:
         with self._lock:
             return dict(self._cache)
+
+    def check_near_end_calibration(self, tracker, curr_near_end: bool) -> None:
+        """Detect paper_near_end transition and self-calibrate the roll tracker.
+
+        Called from the status route on every poll cycle. Uses FastAPI dependency
+        injection so the tracker is always the correct instance (real or test mock).
+        """
+        if curr_near_end and not self._prev_near_end:
+            tracker.calibrate_from_near_end(tracker.state.get("bytes_printed", 0))
+        self._prev_near_end = curr_near_end
