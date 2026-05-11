@@ -75,15 +75,7 @@ export async function restartService(): Promise<void> {
   await request('/api/v1/admin/restart', { method: 'POST' })
 }
 
-export interface BotMessage {
-  timestamp: string
-  sender_name: string
-  sender_id: number
-  text: string
-  status: 'printed' | 'help' | 'error' | 'not_allowed'
-}
-
-export async function getBotLog(): Promise<BotMessage[]> {
-  const res = await request('/api/v1/admin/bot-log')
+export async function getBotLog(page = 1, perPage = 20): Promise<import('./types').BotLogResponse> {
+  const res = await request(`/api/v1/admin/bot-log?page=${page}&per_page=${perPage}`)
   return res.json()
 }

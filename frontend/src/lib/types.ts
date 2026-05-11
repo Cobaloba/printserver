@@ -22,3 +22,10 @@ export interface BotMessage {
   text: string
   status: 'printed' | 'help' | 'error' | 'not_allowed'
 }
+
+export interface BotLogResponse {
+  messages: BotMessage[]
+  total: number
+  page: number
+  per_page: number
+}

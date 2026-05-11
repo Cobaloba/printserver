@@ -41,7 +41,9 @@ def restart_service():
 
 
 @router.get("/bot-log")
-def get_bot_log():
+def get_bot_log(page: int = 1, per_page: int = 20):
     from app.dependencies import get_telegram_bot
     bot = get_telegram_bot()
-    return bot.get_log() if bot is not None else []
+    if bot is None:
+        return {"messages": [], "total": 0, "page": page, "per_page": per_page}
+    return bot.get_stored_messages(page=page, per_page=per_page)

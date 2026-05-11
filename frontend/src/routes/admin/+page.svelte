@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import { toast } from 'svelte-sonner'
   import { getAdminRoll, postAdminRoll, restartService, getBotLog } from '$lib/api'
-  import type { RollState, BotMessage } from '$lib/types'
+  import type { RollState, BotMessage, BotLogResponse } from '$lib/types'
   import PrintButton from '$lib/components/PrintButton.svelte'
   import RollGauge from '$lib/components/RollGauge.svelte'
 
@@ -12,6 +12,22 @@
   let saving = $state(false)
   let restarting = $state(false)
   let botLog: BotMessage[] = $state([])
+  let botPage = $state(1)
+  let botTotal = $state(0)
+  const PER_PAGE = 20
+
+  let totalPages = $derived(Math.max(1, Math.ceil(botTotal / PER_PAGE)))
+
+  async function loadBotLog(page: number) {
+    try {
+      const res = await getBotLog(page, PER_PAGE)
+      botLog = res.messages
+      botTotal = res.total
+      botPage = res.page
+    } catch {
+      // bot may not be configured — silent
+    }
+  }
 
   onMount(async () => {
     try {
@@ -21,11 +37,7 @@
     } catch (e) {
       toast.error('Failed to load roll state')
     }
-    try {
-      botLog = await getBotLog()
-    } catch {
-      // bot may not be configured — silent
-    }
+    await loadBotLog(1)
   })
 
   async function handleRestart() {
@@ -139,7 +151,13 @@
   </section>
 
   <section class="rounded-xl bg-surface p-4 flex flex-col gap-3">
-    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wide">Printy — Bot Messages</h2>
+    <div class="flex items-center justify-between">
+      <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wide">Printy — Bot Messages</h2>
+      {#if botTotal > 0}
+        <span class="text-xs text-gray-600">{botTotal} total</span>
+      {/if}
+    </div>
+
     {#if botLog.length === 0}
       <p class="text-sm text-gray-400">No messages yet — or bot is not configured.</p>
     {:else}
@@ -159,6 +177,22 @@
           </li>
         {/each}
       </ul>
+
+      {#if totalPages > 1}
+        <div class="flex items-center justify-between pt-1">
+          <button
+            onclick={() => loadBotLog(botPage - 1)}
+            disabled={botPage <= 1}
+            class="px-3 py-2 rounded-lg bg-bg text-white text-sm disabled:opacity-30 min-h-[44px] min-w-[44px]"
+          >← Prev</button>
+          <span class="text-xs text-gray-400">Page {botPage} of {totalPages}</span>
+          <button
+            onclick={() => loadBotLog(botPage + 1)}
+            disabled={botPage >= totalPages}
+            class="px-3 py-2 rounded-lg bg-bg text-white text-sm disabled:opacity-30 min-h-[44px] min-w-[44px]"
+          >Next →</button>
+        </div>
+      {/if}
     {/if}
   </section>
 </main>

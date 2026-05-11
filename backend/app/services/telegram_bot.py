@@ -44,6 +44,20 @@ class MessageStore:
             )
             self._conn.commit()
 
+    def get_messages(self, offset: int = 0, limit: int = 20) -> tuple[list[dict], int]:
+        with self._lock:
+            rows = self._conn.execute(
+                "SELECT timestamp, sender_name, sender_id, text, status "
+                "FROM bot_messages ORDER BY id DESC LIMIT ? OFFSET ?",
+                (limit, offset),
+            ).fetchall()
+            total = self._conn.execute("SELECT COUNT(*) FROM bot_messages").fetchone()[0]
+        messages = [
+            {"timestamp": r[0], "sender_name": r[1], "sender_id": r[2], "text": r[3], "status": r[4]}
+            for r in rows
+        ]
+        return messages, total
+
 _HELP = (
     "PrintServer bot 🖨️\n\n"
     "print: <text>  — print free text\n"
@@ -63,6 +77,17 @@ class TelegramBot:
     def get_log(self) -> list:
         with self._log_lock:
             return list(reversed(self._log))  # newest first
+
+    def get_stored_messages(self, page: int = 1, per_page: int = 20) -> dict:
+        """Return a paginated page from the persistent DB (newest first)."""
+        offset = (page - 1) * per_page
+        if self._store:
+            messages, total = self._store.get_messages(offset=offset, limit=per_page)
+        else:
+            all_msgs = self.get_log()
+            total = len(all_msgs)
+            messages = all_msgs[offset:offset + per_page]
+        return {"messages": messages, "total": total, "page": page, "per_page": per_page}
 
     def _record(self, sender_name: str, sender_id: int, text: str, status: str) -> None:
         entry = {
