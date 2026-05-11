@@ -1,3 +1,6 @@
+import os
+import signal
+import threading
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from app.auth import require_api_key
@@ -25,3 +28,13 @@ def get_roll_state(tracker: TrackerDep):
         "last_reset": state["last_reset"],
         "estimated_remaining_pct": tracker.estimate_remaining(),
     }
+
+
+@router.post("/restart")
+def restart_service():
+    def _delayed_shutdown():
+        import time
+        time.sleep(1)
+        os.kill(os.getpid(), signal.SIGTERM)
+    threading.Thread(target=_delayed_shutdown, daemon=False).start()
+    return {"success": True}

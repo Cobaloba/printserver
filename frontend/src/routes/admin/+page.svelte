@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { toast } from 'svelte-sonner'
-  import { getAdminRoll, postAdminRoll } from '$lib/api'
+  import { getAdminRoll, postAdminRoll, restartService } from '$lib/api'
   import type { RollState } from '$lib/types'
   import PrintButton from '$lib/components/PrintButton.svelte'
   import RollGauge from '$lib/components/RollGauge.svelte'
@@ -10,6 +10,7 @@
   let width_mm = $state(57)
   let diameter_mm = $state(40)
   let saving = $state(false)
+  let restarting = $state(false)
 
   onMount(async () => {
     try {
@@ -20,6 +21,17 @@
       toast.error('Failed to load roll state')
     }
   })
+
+  async function handleRestart() {
+    restarting = true
+    try {
+      await restartService()
+    } catch {
+      // Server may kill itself before the response arrives — that's fine
+    }
+    toast.success('Restarting… reload the page in ~15 seconds')
+    restarting = false
+  }
 
   async function handleSave() {
     if (!Number.isFinite(width_mm) || width_mm < 1 || !Number.isFinite(diameter_mm) || diameter_mm < 1) {
@@ -94,5 +106,11 @@
     </div>
 
     <PrintButton loading={saving} onclick={handleSave}>Save New Roll</PrintButton>
+  </section>
+
+  <section class="rounded-xl bg-surface p-4 flex flex-col gap-3">
+    <h2 class="text-sm font-semibold text-gray-400 uppercase tracking-wide">Service</h2>
+    <p class="text-sm text-gray-400">Restart after a printer power cycle to reconnect USB.</p>
+    <PrintButton loading={restarting} onclick={handleRestart}>Restart Service</PrintButton>
   </section>
 </main>

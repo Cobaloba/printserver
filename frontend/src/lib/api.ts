@@ -70,3 +70,7 @@ export async function printQr(url: string): Promise<void> {
 export async function printGoatse(): Promise<void> {
   await request('/api/v1/print/goatse', { method: 'POST' })
 }
+
+export async function restartService(): Promise<void> {
+  await request('/api/v1/admin/restart', { method: 'POST' })
+}
