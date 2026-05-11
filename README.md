@@ -102,6 +102,21 @@ People not on the list are silently ignored. Their attempts appear in the Admin 
 
 To add someone later: update `TELEGRAM_ALLOWED_IDS` and restart the container.
 
+### Message history
+
+Every message Printy receives is stored permanently in `/app/data/bot_messages.db` (SQLite, on the Docker volume). The Admin page shows the last 20; to browse the full history:
+
+```bash
+ssh -i ~/.ssh/pi_printserver conor@192.168.0.25
+sqlite3 ~/printserver/data/bot_messages.db
+
+# Useful queries:
+SELECT timestamp, sender_name, text, status FROM bot_messages ORDER BY id DESC LIMIT 20;
+SELECT sender_name, COUNT(*) FROM bot_messages WHERE status='printed' GROUP BY sender_name;
+SELECT * FROM bot_messages WHERE status='not_allowed';
+.quit
+```
+
 ---
 
 ## Development
