@@ -228,19 +228,18 @@ class EscposPrinter(PrinterInterface):
         self._run(_)
 
     def print_qr(self, url: str) -> None:
+        # Always use raster image — native p.qr() partially executes on this
+        # printer before raising, leaving USB in a corrupt state (Errno 5).
+        # box_size=6 keeps the image under ~200px wide; avoids buffer overflow.
         def _():
+            import qrcode  # transitive dep of python-escpos
+            qr = qrcode.QRCode(border=2, box_size=6)
+            qr.add_data(url)
+            qr.make(fit=True)
+            img = qr.make_image(fill_color="black", back_color="white")
             p = self._p
             p.set(align='center')
-            try:
-                p.qr(url, size=6)
-            except Exception:
-                # Native QR command not supported — fall back to Pillow raster image
-                import qrcode  # transitive dep of python-escpos
-                qr = qrcode.QRCode(border=2)
-                qr.add_data(url)
-                qr.make(fit=True)
-                img = qr.make_image(fill_color="black", back_color="white")
-                p.image(img.get_image())
+            p.image(img.get_image())
             p.text('\n' + url + '\n\n\n')
             p.cut()
 
