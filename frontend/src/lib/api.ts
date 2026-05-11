@@ -74,3 +74,16 @@ export async function printGoatse(): Promise<void> {
 export async function restartService(): Promise<void> {
   await request('/api/v1/admin/restart', { method: 'POST' })
 }
+
+export interface BotMessage {
+  timestamp: string
+  sender_name: string
+  sender_id: number
+  text: string
+  status: 'printed' | 'help' | 'error' | 'not_allowed'
+}
+
+export async function getBotLog(): Promise<BotMessage[]> {
+  const res = await request('/api/v1/admin/bot-log')
+  return res.json()
+}

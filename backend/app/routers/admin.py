@@ -38,3 +38,10 @@ def restart_service():
         os.kill(os.getpid(), signal.SIGTERM)
     threading.Thread(target=_delayed_shutdown, daemon=False).start()
     return {"success": True}
+
+
+@router.get("/bot-log")
+def get_bot_log():
+    from app.dependencies import get_telegram_bot
+    bot = get_telegram_bot()
+    return bot.get_log() if bot is not None else []

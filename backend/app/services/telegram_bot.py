@@ -5,6 +5,8 @@ import threading
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections import deque
+from datetime import datetime, timezone
 
 from app.exceptions import PrinterError
 from app.services import print_service
@@ -20,9 +22,27 @@ _HELP = (
 
 
 class TelegramBot:
-    def __init__(self, token: str):
+    def __init__(self, token: str, allowed_ids: set[int] | None = None):
         self._base = f"https://api.telegram.org/bot{token}"
         self._started = False
+        self._allowed_ids = allowed_ids  # None = open to all
+        self._log: deque = deque(maxlen=20)
+        self._log_lock = threading.Lock()
+
+    def get_log(self) -> list:
+        with self._log_lock:
+            return list(reversed(self._log))  # newest first
+
+    def _record(self, sender_name: str, sender_id: int, text: str, status: str) -> None:
+        entry = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "sender_name": sender_name,
+            "sender_id": sender_id,
+            "text": text,
+            "status": status,
+        }
+        with self._log_lock:
+            self._log.append(entry)
 
     def start(self, printer: PrinterInterface) -> None:
         if self._started:
@@ -32,7 +52,7 @@ class TelegramBot:
             target=self._poll_loop, args=(printer,), daemon=True
         )
         thread.start()
-        logger.info("Telegram bot started")
+        logger.info("Telegram bot started (allowed_ids=%s)", self._allowed_ids)
 
     def _poll_loop(self, printer: PrinterInterface) -> None:
         offset = 0
@@ -66,7 +86,16 @@ class TelegramBot:
         message = update.get("message", {})
         text = (message.get("text") or "").strip()
         chat_id = message.get("chat", {}).get("id")
+        sender = message.get("from", {})
+        sender_id = sender.get("id", 0)
+        sender_name = sender.get("first_name") or sender.get("username") or str(sender_id)
+
         if not text or not chat_id:
+            return
+
+        # Allowlist check — silent drop if not permitted
+        if self._allowed_ids is not None and sender_id not in self._allowed_ids:
+            self._record(sender_name, sender_id, text, "not_allowed")
             return
 
         lower = text.lower()
@@ -78,24 +107,31 @@ class TelegramBot:
             items = [p.strip() for p in parts[1:] if p.strip()]
             if not items:
                 self._send(chat_id, "Usage: print todo: Title | Item 1 | Item 2", ctx)
+                self._record(sender_name, sender_id, text, "help")
                 return
             try:
                 print_service.print_todo(printer, title, items)
                 self._send(chat_id, "Printing ✓", ctx)
+                self._record(sender_name, sender_id, text, "printed")
             except PrinterError as e:
                 self._send(chat_id, f"Printer error: {e}", ctx)
+                self._record(sender_name, sender_id, text, "error")
 
         # print: free text
         elif lower.startswith("print:"):
             body = text[len("print:"):].strip()
             if not body:
                 self._send(chat_id, "Usage: print: Hello world", ctx)
+                self._record(sender_name, sender_id, text, "help")
                 return
             try:
                 print_service.print_free_text(printer, body, "medium")
                 self._send(chat_id, "Printing ✓", ctx)
+                self._record(sender_name, sender_id, text, "printed")
             except PrinterError as e:
                 self._send(chat_id, f"Printer error: {e}", ctx)
+                self._record(sender_name, sender_id, text, "error")
 
         else:
             self._send(chat_id, _HELP, ctx)
+            self._record(sender_name, sender_id, text, "help")

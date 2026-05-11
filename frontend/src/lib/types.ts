@@ -14,3 +14,11 @@ export interface RollState {
 }
 
 export type FontSize = 'small' | 'medium' | 'large'
+
+export interface BotMessage {
+  timestamp: string
+  sender_name: string
+  sender_id: number
+  text: string
+  status: 'printed' | 'help' | 'error' | 'not_allowed'
+}

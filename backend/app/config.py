@@ -6,3 +6,7 @@ PORT = int(os.getenv("PORT", "9000"))
 DATA_DIR = os.getenv("DATA_DIR", "/app/data")
 API_KEY = os.getenv("API_KEY", "")  # empty = no auth (dev / trusted LAN)
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")  # empty = bot disabled
+_raw_allowed = os.getenv("TELEGRAM_ALLOWED_IDS", "")
+TELEGRAM_ALLOWED_IDS: set[int] | None = (
+    {int(x.strip()) for x in _raw_allowed.split(",") if x.strip()} if _raw_allowed else None
+)  # None = open to all; set of ints = allowlist

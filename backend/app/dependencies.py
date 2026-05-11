@@ -5,6 +5,7 @@ from app.config import PRINTER_VENDOR_ID, PRINTER_PRODUCT_ID
 _printer: PrinterInterface | None = None
 _status_cache = None
 _roll_tracker = None
+_telegram_bot = None
 _init_lock = threading.Lock()
 
 
@@ -25,6 +26,15 @@ def get_status_cache():
                 from app.services.status_cache import StatusCache
                 _status_cache = StatusCache()
     return _status_cache
+
+
+def set_telegram_bot(bot) -> None:
+    global _telegram_bot
+    _telegram_bot = bot
+
+
+def get_telegram_bot():
+    return _telegram_bot  # None if bot not configured
 
 
 def get_roll_tracker():

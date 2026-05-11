@@ -20,7 +20,11 @@ async def lifespan(app: FastAPI):
         cache.start(printer)
         if TELEGRAM_BOT_TOKEN:
             from app.services.telegram_bot import TelegramBot
-            TelegramBot(TELEGRAM_BOT_TOKEN).start(printer)
+            from app.config import TELEGRAM_ALLOWED_IDS
+            from app.dependencies import set_telegram_bot
+            bot = TelegramBot(TELEGRAM_BOT_TOKEN, allowed_ids=TELEGRAM_ALLOWED_IDS)
+            bot.start(printer)
+            set_telegram_bot(bot)
     except PrinterError as e:
         logger.warning("Printer unavailable at startup: %s — running in offline mode", e)
     yield
