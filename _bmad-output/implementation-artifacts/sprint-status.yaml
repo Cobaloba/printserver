@@ -64,15 +64,15 @@ development_status:
   epic-2-retrospective: done
 
   # ─── Epic 3: Frontend PWA ───────────────────────────────────────────────────
-  epic-3: in-progress
-  3-1-sveltekit-foundation: review
-  3-2-api-client-stores-and-polling: review
-  3-3-shared-components: review
-  3-4-root-layout-home-screen: review
-  3-5-todo-and-free-text-print-pages: review
-  3-6-receipt-print-page: review
-  3-7-qr-code-goatse-pages: review
-  3-8-admin-page-till-roll-management: review
-  3-9-pwa-configuration: review
-  3-10-accessibility-polish: review
+  epic-3: done
+  3-1-sveltekit-foundation: done
+  3-2-api-client-stores-and-polling: done
+  3-3-shared-components: done
+  3-4-root-layout-home-screen: done
+  3-5-todo-and-free-text-print-pages: done
+  3-6-receipt-print-page: done
+  3-7-qr-code-goatse-pages: done
+  3-8-admin-page-till-roll-management: done
+  3-9-pwa-configuration: done
+  3-10-accessibility-polish: done
   epic-3-retrospective: optional
