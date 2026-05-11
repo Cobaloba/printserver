@@ -143,19 +143,19 @@
     {#if botLog.length === 0}
       <p class="text-sm text-gray-400">No messages yet — or bot is not configured.</p>
     {:else}
-      <ul class="flex flex-col gap-2">
+      <ul class="flex flex-col gap-3">
         {#each botLog as msg}
-          <li class="flex items-start justify-between gap-2 text-sm border-b border-gray-800 pb-2">
-            <div class="flex flex-col gap-0.5 min-w-0">
-              <span class="text-white font-medium truncate">{msg.sender_name}</span>
-              <span class="text-gray-400 truncate">{msg.text}</span>
+          <li class="flex flex-col gap-0.5 text-sm border-b border-gray-800 pb-3">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-white font-medium">{msg.sender_name}</span>
+              <div class="flex items-center gap-2 shrink-0">
+                <span class="{statusColour[msg.status] ?? 'text-gray-400'} text-xs font-medium">
+                  {statusLabel[msg.status] ?? msg.status}
+                </span>
+                <span class="text-gray-600 text-xs">{formatTime(msg.timestamp)}</span>
+              </div>
             </div>
-            <div class="flex flex-col items-end gap-0.5 shrink-0">
-              <span class="{statusColour[msg.status] ?? 'text-gray-400'} text-xs font-medium">
-                {statusLabel[msg.status] ?? msg.status}
-              </span>
-              <span class="text-gray-600 text-xs">{formatTime(msg.timestamp)}</span>
-            </div>
+            <span class="text-gray-400 break-words">{msg.text}</span>
           </li>
         {/each}
       </ul>

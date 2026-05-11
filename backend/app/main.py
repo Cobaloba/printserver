@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from app.exceptions import PrinterError
 from app.routers import health, print as print_router, status as status_router, admin as admin_router
 
@@ -44,6 +45,16 @@ app.include_router(print_router.router, prefix="/api/v1")
 app.include_router(status_router.router)
 app.include_router(admin_router.router)
 
-# StaticFiles serves the SvelteKit SPA at "/" — must come last
+# SPAStaticFiles falls back to index.html for any path that doesn't match a
+# real file — lets SvelteKit's client-side router handle /todo, /receipt etc.
+class _SPAStaticFiles(StaticFiles):
+    async def get_response(self, path: str, scope):
+        try:
+            return await super().get_response(path, scope)
+        except StarletteHTTPException as ex:
+            if ex.status_code == 404:
+                return await super().get_response("index.html", scope)
+            raise
+
 _static_dir = os.path.join(os.path.dirname(__file__), "static")
-app.mount("/", StaticFiles(directory=_static_dir, html=True), name="static")
+app.mount("/", _SPAStaticFiles(directory=_static_dir, html=True), name="static")
