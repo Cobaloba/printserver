@@ -35,7 +35,7 @@
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
 
 generated: 2026-05-08
-last_updated: 2026-05-10
+last_updated: 2026-05-11
 project: PrintServer
 project_key: NOKEY
 tracking_system: file-system
@@ -53,14 +53,14 @@ development_status:
   epic-1-retrospective: optional
 
   # ─── Epic 2: Complete Backend API ──────────────────────────────────────────
-  epic-2: in-progress
-  2-1-printerinterface-escposprinter-mockprinter: review
-  2-2-print-service-todo-receipt-goatse: review
-  2-3-print-service-free-text-qr-code: review
-  2-4-fastapi-application-routers-models-static-mount: review
-  2-5-status-cache-background-polling-thread: review
-  2-6-till-roll-tracker: review
-  2-7-admin-endpoints-full-test-suite: review
+  epic-2: done
+  2-1-printerinterface-escposprinter-mockprinter: done
+  2-2-print-service-todo-receipt-goatse: done
+  2-3-print-service-free-text-qr-code: done
+  2-4-fastapi-application-routers-models-static-mount: done
+  2-5-status-cache-background-polling-thread: done
+  2-6-till-roll-tracker: done
+  2-7-admin-endpoints-full-test-suite: done
   epic-2-retrospective: optional
 
   # ─── Epic 3: Frontend PWA ───────────────────────────────────────────────────
