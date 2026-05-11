@@ -17,8 +17,12 @@ class StatusCache:
     def __init__(self):
         self._cache: dict = dict(_DEFAULT_STATE)
         self._lock = threading.Lock()
+        self._started = False
 
     def start(self, printer) -> None:
+        if self._started:
+            return
+        self._started = True
         thread = threading.Thread(
             target=self._poll_loop, args=(printer,), daemon=True
         )

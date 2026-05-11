@@ -1,7 +1,10 @@
 import json
+import logging
 import os
 from datetime import datetime, timezone
 from pathlib import Path
+
+logger = logging.getLogger(__name__)
 
 _D_CORE_MM = 12  # typical thermal receipt roll core diameter (mm)
 _BYTES_PER_MM2 = 14  # calibration: approx bytes per mm² of roll cross-section
@@ -25,7 +28,12 @@ class RollTracker:
         tracker = cls()
         tracker._path = Path(path)
         if tracker._path.exists():
-            tracker._state = json.loads(tracker._path.read_text())
+            try:
+                loaded = json.loads(tracker._path.read_text())
+                tracker._state = {**cls._DEFAULT, **loaded}
+            except (json.JSONDecodeError, ValueError):
+                logger.warning("Roll state file corrupt, resetting to defaults")
+                tracker._state = dict(cls._DEFAULT)
         else:
             tracker._state = dict(cls._DEFAULT)
             tracker._state["last_reset"] = datetime.now(timezone.utc).isoformat()

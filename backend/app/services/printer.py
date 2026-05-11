@@ -103,6 +103,7 @@ def _make_usb(vendor_id: int, product_id: int):
         def __init__(self):
             self._bytes_written = 0
             super().__init__(vendor_id, product_id)
+            self._bytes_written = 0  # discard bytes sent during device initialisation
 
         def reset_counter(self) -> None:
             self._bytes_written = 0
@@ -118,7 +119,9 @@ class EscposPrinter(PrinterInterface):
     LINE_WIDTH = 32
 
     def __init__(self, vendor_id: int, product_id: int):
+        import threading
         from app.exceptions import PrinterError
+        self._lock = threading.Lock()
         try:
             self._p = _make_usb(vendor_id, product_id)
         except Exception as e:
@@ -126,12 +129,13 @@ class EscposPrinter(PrinterInterface):
 
     def _run(self, fn):
         from app.exceptions import PrinterError
-        self._p.reset_counter()
-        try:
-            fn()
-        except Exception as e:
-            logger.warning("Printer error: %s", e)
-            raise PrinterError(str(e)) from e
+        with self._lock:
+            self._p.reset_counter()
+            try:
+                fn()
+            except Exception as e:
+                logger.warning("Printer error: %s", e)
+                raise PrinterError(str(e) or repr(e)) from e
 
     def print_todo(self, title: str, items: list[str]) -> None:
         lw = self.LINE_WIDTH
