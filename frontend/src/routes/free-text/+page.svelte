@@ -9,6 +9,10 @@
   let loading = $state(false)
 
   async function handlePrint() {
+    if (!text.trim()) {
+      toast.error('Enter some text')
+      return
+    }
     loading = true
     try {
       await printFreeText(text, font_size)

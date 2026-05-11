@@ -19,7 +19,7 @@
   function addRow() {
     const name = newName.trim()
     const price = parseFloat(newPrice)
-    if (!name || isNaN(price) || price <= 0) return
+    if (!name || isNaN(price) || price < 0) return
     items = [...items, { name, price }]
     newName = ''
     newPrice = ''

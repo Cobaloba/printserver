@@ -21,6 +21,10 @@
   }
 
   async function handlePrint() {
+    if (items.length === 0) {
+      toast.error('Add at least one item')
+      return
+    }
     loading = true
     try {
       await printTodo(title, items)

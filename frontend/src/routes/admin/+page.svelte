@@ -22,11 +22,15 @@
   })
 
   async function handleSave() {
+    if (!Number.isFinite(width_mm) || width_mm < 1 || !Number.isFinite(diameter_mm) || diameter_mm < 1) {
+      toast.error('Width and diameter must be positive numbers')
+      return
+    }
     saving = true
     try {
       await postAdminRoll(width_mm, diameter_mm)
-      roll = await getAdminRoll()
       toast.success('Roll updated')
+      roll = await getAdminRoll().catch(() => roll)
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Save failed')
     } finally {

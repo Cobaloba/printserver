@@ -18,8 +18,10 @@
     const trimmed = url.trim()
     if (!isValidUrl(trimmed)) {
       qrDataUrl = ''
+      urlError = ''
       return
     }
+    urlError = ''
     // Debounce: wait 300ms after typing stops before generating
     const timer = setTimeout(() => {
       QRCode.toDataURL(trimmed, { width: 200, margin: 1 })

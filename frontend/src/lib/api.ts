@@ -1,7 +1,7 @@
 import type { PrinterStatus, RollState, FontSize } from './types'
 
 async function request(url: string, init?: RequestInit): Promise<Response> {
-  const res = await fetch(url, init)
+  const res = await fetch(url, { signal: AbortSignal.timeout(8000), ...init })
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
     throw new Error((err as { detail?: string }).detail ?? 'Request failed')

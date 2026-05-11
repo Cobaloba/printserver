@@ -21,3 +21,12 @@
 - Makefile hardcodes `PI_HOST`/`PI_KEY` — correct for single-developer project; consider reading from env vars with hardcoded defaults for portability
 - `Makefile test` has no dependency install step — fails on clean environment; consider adding a `make install` prerequisite
 - No image digest pinning for `containrrr/watchtower`, `node:20-alpine`, `python:3.12-slim-bookworm` — floating tags expose to upstream breaking changes; pin digests when stability becomes critical
+
+## Deferred from: code review of Epic 3 frontend (2026-05-11)
+
+- Float imprecision in receipt item prices — `parseFloat` stores raw float; backend `f'£{price:.2f}'` rounds at print time so output is correct, but raw value sent to API has potential imprecision. Address if backend arithmetic ever changes.
+- Overlapping `getStatus` poll calls if one takes >5 seconds — backend status endpoint reads from in-memory cache (<200ms), so probability is negligible; revisit if backend latency degrades.
+- No runtime schema validation on API responses — `res.json()` cast directly to TypeScript types with no Zod/runtime check; silent field mismatches possible if API shape changes. Consider adding Zod in V2.
+- Empty `store` field on receipt — backend accepts empty string; printer prints a blank centred store name line. Design decision: no enforcement added.
+- Backend: `paper_near_end` not cleared in status cache on poll failure — only `printer_online` is set to False; stale paper warning can persist. Fix in backend status_cache.py `_poll_loop`.
+- Backend: Printer USB singleton has no reconnection path — USB disconnect/reconnect requires container restart; no `reset_printer()` endpoint. Add reconnection logic in a future backend story.

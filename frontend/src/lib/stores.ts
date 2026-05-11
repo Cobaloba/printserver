@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store'
 import type { PrinterStatus, RollState } from './types'
 
-const OFFLINE_STATUS: PrinterStatus = {
+export const OFFLINE_STATUS: PrinterStatus = {
   printer_online: false,
   paper_near_end: false,
   paper_out: false,

@@ -16,16 +16,17 @@
 
   let fillEnd = $derived(toCartesian(180 + Math.min(Math.max(pct, 0), 100) * 1.8))
   let strokeColor = $derived(pct < 15 ? '#ef4444' : '#22c55e')
+  let bgColor = $derived(pct < 15 ? '#7f1d1d' : '#374151')
 
   const bgPath = `M ${left.x} ${left.y} A ${r} ${r} 0 0 1 ${right.x} ${right.y}`
 </script>
 
 <svg viewBox="0 0 100 60" aria-label="Roll gauge {pct}%">
-  <!-- Background arc -->
+  <!-- Background arc (red-tinted when low to signal warning even at 0%) -->
   <path
     d={bgPath}
     fill="none"
-    stroke="#374151"
+    stroke={bgColor}
     stroke-width="8"
     stroke-linecap="round"
   />
