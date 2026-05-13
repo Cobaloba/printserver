@@ -133,6 +133,7 @@ class EscposPrinter(PrinterInterface):
         with self._lock:
             self._p.reset_counter()
             try:
+                self._p.init()  # ESC @ — resets printer state before every job
                 fn()
             except Exception as e:
                 logger.warning("Printer error: %s", e)
@@ -219,11 +220,11 @@ class EscposPrinter(PrinterInterface):
         def _():
             p = self._p
             if font_size == 'small':
-                p.set(align='left', font='b')           # font B is physically smaller
+                p.set(align='left', font='b', custom_size=True, width=1, height=1)
             elif font_size == 'large':
                 p.set(align='left', font='a', custom_size=True, width=2, height=2)
             else:                                        # medium (default)
-                p.set(align='left', font='a')
+                p.set(align='left', font='a', custom_size=True, width=1, height=1)
             p.text(text + '\n\n\n')
             p.cut()
 
