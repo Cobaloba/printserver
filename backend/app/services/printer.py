@@ -133,7 +133,7 @@ class EscposPrinter(PrinterInterface):
         with self._lock:
             self._p.reset_counter()
             try:
-                self._p.init()  # ESC @ — resets printer state before every job
+                self._p._raw(b'\x1b\x40')  # ESC @ — resets printer state before every job
                 fn()
             except Exception as e:
                 logger.warning("Printer error: %s", e)
