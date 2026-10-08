@@ -117,6 +117,7 @@ def _make_usb(vendor_id: int, product_id: int):
 
 class EscposPrinter(PrinterInterface):
     LINE_WIDTH = 32
+    QR_MAX_DOTS = 360  # 58mm paper is 384 dots wide; leave a small margin
 
     def __init__(self, vendor_id: int, product_id: int):
         import threading
@@ -231,18 +232,24 @@ class EscposPrinter(PrinterInterface):
         self._run(_)
 
     def print_qr(self, url: str) -> None:
-        # Always use raster image — native p.qr() partially executes on this
+        # Always use an image — native p.qr() partially executes on this
         # printer before raising, leaving USB in a corrupt state (Errno 5).
-        # box_size=6 keeps the image under ~200px wide; avoids buffer overflow.
+        # Send it as bitImageColumn (ESC *): the default bitImageRaster (GS v 0)
+        # prints nothing usable on the Jolimark. Column mode streams in 24-dot
+        # strips, so a full-width image doesn't overflow the buffer.
         def _():
             import qrcode  # transitive dep of python-escpos
-            qr = qrcode.QRCode(border=2, box_size=6)
+            qr = qrcode.QRCode(border=2, box_size=1)
             qr.add_data(url)
             qr.make(fit=True)
+            # Largest whole-dot module size that fits the paper, so the code
+            # fills the width without blurry non-integer scaling.
+            modules = qr.modules_count + 2 * qr.border
+            qr.box_size = max(1, self.QR_MAX_DOTS // modules)
             img = qr.make_image(fill_color="black", back_color="white")
             p = self._p
             p.set(align='center')
-            p.image(img.get_image())
+            p.image(img.get_image(), impl='bitImageColumn')
             p.text('\n' + url + '\n\n\n')
             p.cut()
 
