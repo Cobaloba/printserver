@@ -1,5 +1,7 @@
 # ── Stage 1: Build frontend ──────────────────────────────────────────────────
-FROM node:20-alpine AS frontend-builder
+# Runs on the build machine's native platform: the output is static files, and
+# npm ci under QEMU arm64 emulation crashes (Illegal instruction) and hangs CI.
+FROM --platform=$BUILDPLATFORM node:20-alpine AS frontend-builder
 WORKDIR /build
 
 COPY frontend/package*.json ./
